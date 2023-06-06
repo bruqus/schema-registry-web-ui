@@ -5,15 +5,16 @@ import { toast } from 'react-toastify';
 import { registerSubject, checkSubjectRegistered } from 'api/subjects';
 import { ROUTE_SCHEMA } from 'constants/routes';
 import emitter from 'utils/event-emitter';
+import { formatJSONContent } from 'utils/formatter';
 import { EVENT_SCHEMA_CREATED } from 'constants/events';
-import { SchemaSchema } from 'types';
+import type { Schema, SchemaSchema } from 'types';
 
 import { sample } from '../constants';
 
-const useNewSchema = () => {
+const useNewSchema = (schema: Schema | null) => {
   const navigate = useNavigate();
-  const [newSubject, setNewSubject] = useState('');
-  const [schemaSchema, setSchemaSchema] = useState(sample);
+  const [newSubject, setNewSubject] = useState(schema?.subject ?? '');
+  const [schemaSchema, setSchemaSchema] = useState(formatJSONContent(schema?.schema ?? '') || sample);
   const [isSchemaValid, setIsSchemaValid] = useState(false);
   const [isSchemaSchemaValid, setIsSchemaSchemaValid] = useState(true);
   const [isLoading, setIsLoading] = useState(false);

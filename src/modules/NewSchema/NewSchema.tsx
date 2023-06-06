@@ -1,10 +1,14 @@
 import React from 'react';
 import { TextField, Button, Box, Card } from '@mui/material';
+import { useLocation } from 'react-router-dom';
 
 import CodeEditor from 'modules/CodeEditor';
+
 import { useNewSchema } from './hooks';
 
 const NewSchema = () => {
+  const { state = null } = useLocation();
+
   const {
     subject,
     newSubject,
@@ -17,7 +21,7 @@ const NewSchema = () => {
     setIsSchemaSchemaValid,
     handleChangeNewSubject,
     handleChangeSchemaSchema,
-  } = useNewSchema();
+  } = useNewSchema(state);
 
   return (
     <Card
