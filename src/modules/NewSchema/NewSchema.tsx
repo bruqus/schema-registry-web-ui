@@ -6,17 +6,17 @@ import { useNewSchema } from './hooks';
 
 const NewSchema = () => {
   const {
+    subject,
     newSubject,
-    handleChangeNewSubject,
-    validateSchema,
-    createSchema,
-    isSchemaValid,
+    schemaSchema,
     isLoading,
-    isCodeValid,
-    code,
-    handleCodeChange,
-    setIsCodeValid,
-    trimmedSubject,
+    isSchemaValid,
+    isSchemaSchemaValid,
+    createSchema,
+    validateSchema,
+    setIsSchemaSchemaValid,
+    handleChangeNewSubject,
+    handleChangeSchemaSchema,
   } = useNewSchema();
 
   return (
@@ -40,12 +40,7 @@ const NewSchema = () => {
       />
 
       <Box display="flex" gap={2} mt={1}>
-        <Button
-          onClick={validateSchema}
-          disabled={!trimmedSubject || isLoading}
-          variant="outlined"
-          color="info"
-        >
+        <Button onClick={validateSchema} disabled={!subject || isLoading} variant="outlined" color="info">
           Validate
         </Button>
 
@@ -53,14 +48,18 @@ const NewSchema = () => {
           onClick={createSchema}
           variant="outlined"
           color="success"
-          disabled={!isSchemaValid || !isCodeValid || isLoading}
+          disabled={!isSchemaValid || !isSchemaSchemaValid || isLoading}
         >
           Create new schema
         </Button>
       </Box>
 
       <Box flex={1} mt={2}>
-        <CodeEditor code={code} onChange={handleCodeChange} onCodeValidate={setIsCodeValid} />
+        <CodeEditor
+          code={schemaSchema}
+          onChange={handleChangeSchemaSchema}
+          onCodeValidate={setIsSchemaSchemaValid}
+        />
       </Box>
     </Card>
   );
