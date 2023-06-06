@@ -1,6 +1,6 @@
-import type { Schema, SchemaVersion } from 'types';
+import type { SchemaSubject, SchemaVersion } from 'types';
 
 export type IHistoryFormProps = {
-  history: Schema[];
+  subject: SchemaSubject;
   versions: SchemaVersion[];
 };

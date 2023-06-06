@@ -1,73 +1,54 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
-import type { SchemaSubject, Schema } from 'types';
+import { getSpecificSubjectVersion, getSubjectVersions } from 'api/subjects';
+import type { Schema, SchemaSubject, SchemaVersion } from 'types';
 import { ROUTE_INDEX } from 'constants/routes';
-import { EVENT_SCHEMA_DELETED } from 'constants/events';
-import { getSubjectVersions, getSpecificSubjectVersion } from 'api/subjects';
-import emitter from 'utils/event-emitter';
 
-const useCurrentSchema = (subject: SchemaSubject) => {
+const useCurrentSchema = (subject: SchemaSubject, paramVersion: string) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [versions, setVersions] = useState<SchemaVersion[]>([]);
+  const [currSchema, setCurrSchema] = useState<Schema | null>(null);
+
   const navigate = useNavigate();
 
-  const [code, setCode] = useState('');
-  const [schemaHistory, setSchemaHistory] = useState<Schema[]>([]);
-  const [currentSchema, setCurrentSchema] = useState<Schema | null>(null);
+  const version = useMemo(() => {
+    if (paramVersion === 'latest') return paramVersion;
+    const nVersion = Number(paramVersion);
+    return Number.isNaN(nVersion) ? -1 : nVersion;
+  }, [paramVersion, versions]);
 
-  const schemaVersions = useMemo(() => schemaHistory.map((el) => el.version), [schemaHistory]);
-
-  const getSchemaHistory = useCallback(() => {
-    return getSubjectVersions(subject)
-      .then((versions) => Promise.allSettled(versions.map((v) => getSpecificSubjectVersion(subject, v))))
-      .then((results) => {
-        const history: Schema[] = [];
-        results.forEach((result) => {
-          if (result.status === 'rejected') {
-            toast.error(result.reason.message);
-          } else if (result.status === 'fulfilled') {
-            history.push(result.value);
-          }
-        });
-        if (results.length === history.length) {
-          setSchemaHistory(history);
-          setCurrentSchema(history[history.length - 1]);
-        }
-
-        if (history.length === 0) {
-          emitter.emit(EVENT_SCHEMA_DELETED);
+  const refreshSchema = useCallback(
+    (v?: SchemaVersion) => {
+      setIsLoading(true);
+      return Promise.all([getSpecificSubjectVersion(subject, v ?? version), getSubjectVersions(subject)])
+        .then(([schema, versions]) => {
+          setCurrSchema(schema);
+          setVersions(versions);
+        })
+        .catch((err) => {
+          toast.error(String(err));
           navigate(ROUTE_INDEX);
-        }
-      })
-      .catch((err) => {
-        toast.error(String(err));
-        navigate(ROUTE_INDEX);
-      });
-  }, [navigate, subject]);
+        })
+        .finally(() => {
+          setIsLoading(false);
+          // setIsEditing(false);
+        });
+    },
+    [subject, version, navigate],
+  );
 
   useEffect(() => {
-    getSchemaHistory();
-  }, [getSchemaHistory]);
-
-  useEffect(() => {
-    if (currentSchema?.schema) {
-      setCode(currentSchema.schema);
-    }
-  }, [currentSchema?.schema]);
-
-  const handleChangeCurrentSchema = (version: number) => {
-    const candidate = schemaHistory.find((schema) => schema.version === version);
-    setCurrentSchema(candidate ?? null);
-  };
+    refreshSchema();
+  }, [refreshSchema]);
 
   return {
-    currentSchema,
-    handleChangeCurrentSchema,
-    code,
-    schemaVersions,
-    schemaHistory,
-    getSchemaHistory,
-    setCode,
+    currSchema,
+    versions,
+    version,
+    refreshSchema,
+    isLoading,
   };
 };
 
