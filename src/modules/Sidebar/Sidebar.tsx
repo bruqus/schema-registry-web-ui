@@ -40,7 +40,7 @@ const Sidebar = () => {
 
         <Box display="flex" alignItems="center" justifyContent="space-between" my={2}>
           <Typography variant="subtitle2" component="div" noWrap>
-            <IconButton onClick={refreshSchemas}>
+            <IconButton onClick={refreshSchemas} title="Refresh list">
               <RefreshIcon width={20} height={20} />
             </IconButton>
             Total Schemas:{' '}
