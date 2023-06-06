@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Box, Tab, Tabs, Typography, Card, IconButton, CircularProgress } from '@mui/material';
 
 import RefreshIcon from 'components/RefreshIcon';
+import ForkIcon from 'components/ForkIcon';
 import { SchemaSubject } from 'types';
 
 import VersionSelect from './partials/VersionSelect';
@@ -22,7 +23,10 @@ const SchemaComponent = () => {
   }>();
   const [activeTab, setActiveTab] = useState(0);
 
-  const { currSchema, version, refreshSchema, versions, isLoading } = useCurrentSchema(subject, paramVersion);
+  const { currSchema, version, refreshSchema, versions, isLoading, handleForkSchema } = useCurrentSchema(
+    subject,
+    paramVersion,
+  );
 
   const {
     isEditing,
@@ -105,9 +109,15 @@ const SchemaComponent = () => {
               {Number(currSchema?.version) > 1 && <Tab label="History" />}
             </Tabs>
 
-            <IconButton sx={{ marginRight: 1 }} onClick={handleRefreshSchema}>
-              <RefreshIcon width={24} height={24} />
-            </IconButton>
+            <Box sx={{ display: 'flex' }}>
+              <IconButton sx={{ marginRight: 1 }} onClick={handleRefreshSchema} title="Refresh schema">
+                <RefreshIcon width={24} height={24} />
+              </IconButton>
+
+              <IconButton sx={{ marginRight: 1 }} onClick={handleForkSchema} title="Fork current version">
+                <ForkIcon width={24} height={24} />
+              </IconButton>
+            </Box>
           </Box>
 
           <TabPanel value={activeTab} index={0} height="100%">

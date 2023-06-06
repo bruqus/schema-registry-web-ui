@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 
 import { getSpecificSubjectVersion, getSubjectVersions } from 'api/subjects';
 import type { Schema, SchemaSubject, SchemaVersion } from 'types';
-import { ROUTE_INDEX } from 'constants/routes';
+import { ROUTE_INDEX, ROUTE_SCHEMA_NEW } from 'constants/routes';
 
 const useCurrentSchema = (subject: SchemaSubject, paramVersion: string) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -39,6 +39,10 @@ const useCurrentSchema = (subject: SchemaSubject, paramVersion: string) => {
     [subject, version, navigate],
   );
 
+  const handleForkSchema = () => {
+    navigate(ROUTE_SCHEMA_NEW, { state: currSchema });
+  };
+
   useEffect(() => {
     refreshSchema();
   }, [refreshSchema]);
@@ -49,6 +53,7 @@ const useCurrentSchema = (subject: SchemaSubject, paramVersion: string) => {
     version,
     refreshSchema,
     isLoading,
+    handleForkSchema,
   };
 };
 
