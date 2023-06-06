@@ -1,16 +1,26 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Box, Button, Card, Divider, TextField, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  CircularProgress,
+  Divider,
+  IconButton,
+  TextField,
+  Typography,
+} from '@mui/material';
 
 import { ROUTE_GLOBAL_CONFIG } from 'constants/routes';
+import RefreshIcon from 'components/RefreshIcon';
 
-import SubjectsList from './partials/SubjectsList';
-import { useDebouncedSearch, useSubjects } from './hooks';
+import SchemasList from './partials/SchemasList';
+import useLatestSchemas from './hooks/useLatestSchemas';
+import { useSchemasQuery } from './hooks';
 
 const Sidebar = () => {
-  const subjects = useSubjects();
-  const { searchTerm, updateSearchTerm, filterItems } = useDebouncedSearch();
-  const filteredSubjects = filterItems(subjects);
+  const { schemas, refreshSchemas, isLoading } = useLatestSchemas();
+  const { query, updateQuery, isStale, filteredSchemas } = useSchemasQuery(schemas);
 
   return (
     <Card
@@ -30,9 +40,12 @@ const Sidebar = () => {
 
         <Box display="flex" alignItems="center" justifyContent="space-between" my={2}>
           <Typography variant="subtitle2" component="div" noWrap>
+            <IconButton onClick={refreshSchemas}>
+              <RefreshIcon width={20} height={20} />
+            </IconButton>
             Total Schemas:{' '}
             <Typography color="primary" variant="h6" component="span">
-              {subjects.length}
+              {schemas.length}
             </Typography>
           </Typography>
 
@@ -48,15 +61,19 @@ const Sidebar = () => {
           fullWidth
           label="Search schema"
           type="search"
-          value={searchTerm}
-          onChange={updateSearchTerm}
+          value={query}
+          onChange={updateQuery}
           autoComplete="off"
         />
       </Box>
 
       <Divider />
 
-      <SubjectsList subjects={filteredSubjects} />
+      {isLoading ? (
+        <CircularProgress sx={{ marginX: 'auto', marginY: 3 }} />
+      ) : (
+        <SchemasList schemas={filteredSchemas} isStale={isStale} />
+      )}
     </Card>
   );
 };

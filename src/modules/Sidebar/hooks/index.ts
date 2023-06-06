@@ -1,2 +1,2 @@
-export { default as useSubjects } from './useSubjects';
-export { default as useDebouncedSearch } from './useDebouncedSearch';
+export { default as useLatestSchemas } from './useLatestSchemas';
+export { default as useSchemasQuery } from './useSchemasQuery';
