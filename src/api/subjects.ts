@@ -58,7 +58,7 @@ export const deleteSubject = async (subject: SchemaSubject, version?: SchemaVers
  * */
 export const getSpecificSubjectVersion = async (
   subject: SchemaSubject,
-  version: SchemaVersion = -1,
+  version: SchemaVersion | 'latest' = 'latest',
 ): Promise<Schema> => {
   const response = await fetch(`${APIStore.getBaseUrl()}/subjects/${subject}/versions/${version}`);
   const json = await response.json();
